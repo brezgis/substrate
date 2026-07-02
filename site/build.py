@@ -130,6 +130,33 @@ def _md_section(md_text, heading):
     return m.group(1).strip() if m else ""
 
 
+# leading boilerplate label on a notebook title ("Research Project: X" -> "X")
+_DIR_LABEL = re.compile(r"^(lab notebook|notebook|research (?:project|log|notes?)|project)"
+                        r"\s*[:—–-]\s*", re.I)
+# generic section headings that aren't a research direction
+_DIR_GENERIC = {"current progress", "progress", "status", "findings", "findings so far",
+                "next steps", "methodology", "method", "results", "summary", "overview",
+                "goal", "goals", "objective", "objectives", "lab notebook", "notebook",
+                "research project", "research log", "research notes"}
+
+
+def _project_direction(notebook):
+    """Robustly recover a project's research direction from a notebook the model
+    curates freely — it doesn't always keep a '## Research direction' heading."""
+    sec = _md_section(notebook, "Research direction")
+    if sec:  # the template section still present → honor it (placeholder = unchosen)
+        return "" if sec.lower().startswith("(not yet") else _plain(sec)
+    for m in re.finditer(r"^#{1,3}\s+(.+)$", notebook, re.MULTILINE):
+        title = _plain(_DIR_LABEL.sub("", m.group(1)))       # drop "Research Project:" etc.
+        if len(title) > 8 and title.lower() not in _DIR_GENERIC:
+            return title
+    for line in notebook.splitlines():
+        s = _plain(line)
+        if len(s) > 25 and not s.lower().startswith(("this is your", "append-only", "#")):
+            return s
+    return ""
+
+
 def load_project(pdir):
     with open(os.path.join(pdir, "meta.json")) as fh:
         meta = json.load(fh)
@@ -139,13 +166,8 @@ def load_project(pdir):
     notebook = open(nb_path, errors="replace").read() if os.path.exists(nb_path) else ""
     log = open(log_path, errors="replace").read() if os.path.exists(log_path) else ""
 
-    direction = _md_section(notebook, "Research direction")
-    if not direction or direction.lower().startswith("(not yet"):
-        direction = ""
-        direction_title = ""
-    else:
-        direction = _plain(direction)
-        direction_title = _first_sentence(direction)
+    direction = _project_direction(notebook)
+    direction_title = _first_sentence(direction) if direction else ""
     # per-session log summaries keyed by index
     summaries = {}
     for chunk in re.split(r"(?=^## Session )", log, flags=re.MULTILINE):
