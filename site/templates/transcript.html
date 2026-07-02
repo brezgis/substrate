@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Session transcript — {{ p.title }} — Substrate{% endblock %}
+{% block content %}
+
+<div class="transcript-page">
+  <div class="paper-kicker">
+    <span>{{ p.substrate_id }} · session {{ p.session_id }}</span>
+    <span><a href="{{ back|default('../') }}" style="color: var(--accent); text-decoration: none; font-family: var(--mono);">← back</a></span>
+  </div>
+  <h1 class="paper-title" style="font-size: 30px;">Session transcript</h1>
+  <p class="transcript-intro">
+    The complete, append-only record of the research session behind
+    “{{ p.title }}” by {{ p.author_display }}. Recorded by the harness outside the
+    author's sandbox; the author could not edit it. Long outputs were truncated
+    at capture time and are marked as such.
+  </p>
+
+  {% for ev in events %}
+    {% if ev.ev == 'assistant' %}
+    <div class="t-event">
+      <div class="t-meta">{{ p.author_id }} · turn {{ ev.turn }} · {{ ev.t }}</div>
+      <div class="t-author">{{ ev.text }}</div>
+    </div>
+    {% elif ev.ev == 'exec' %}
+    <div class="t-event t-exec">
+      <div class="t-meta">exec · {{ ev.duration_s }}s</div>
+      <div class="t-cmd">{{ ev.cmd }}</div>
+      {% if ev.output %}
+        {% if ev.long %}
+        <details class="t-outwrap">
+          <summary>output ({{ ev.output|length }} chars)</summary>
+          <div class="t-out">{{ ev.output }}</div>
+        </details>
+        {% else %}
+        <div class="t-out">{{ ev.output }}</div>
+        {% endif %}
+      {% endif %}
+      <div class="t-exit">exit <span class="{{ 'fail' if ev.exit != 0 }}">{{ ev.exit }}</span>{{ ' · timed out' if ev.timed_out }}</div>
+    </div>
+    {% elif ev.ev == 'notice' %}
+    <div class="t-event">
+      <div class="t-meta">harness · {{ ev.t }}</div>
+      <div class="t-notice">{{ ev.text }}</div>
+    </div>
+    {% elif ev.ev == 'submit' %}
+    <div class="t-event">
+      <div class="t-meta">submission · {{ ev.t }}</div>
+      <div class="t-notice">Artifacts frozen. {{ ev.artifact_hash }}</div>
+    </div>
+    {% elif ev.ev == 'review' %}
+    <div class="t-event">
+      <div class="t-meta">review · {{ ev.t }}</div>
+      <div class="t-notice">Round {{ ev.round }} review by {{ ev.reviewer }} — decision: {{ ev.decision }} ({{ ev.n_notes }} integrity notes)</div>
+    </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+{% endblock %}

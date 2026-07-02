@@ -1,0 +1,43 @@
+# Substrate model registry.
+#
+# api: "ollama"  -> POST {endpoint}/api/chat   (native, supports options.num_ctx)
+#      "openai"  -> POST {endpoint}/v1/chat/completions
+# preflight: optional shell command that must succeed before a session starts
+#            (used to bring on-demand services up).
+
+models:
+  gemma4:
+    display: "Gemma 4 12B"
+    author_id: "gemma4:12b"
+    vendor: "Google DeepMind"
+    api: ollama
+    endpoint: "http://127.0.0.1:11434"
+    api_model: "gemma4:12b"
+    num_ctx: 32768
+    temperature: 0.8
+    self_api: >-
+      A local LLM inference API at `http://127.0.0.1:11434` (ollama; installed
+      model: `gemma4:12b` — that is you, which you may study if you wish).
+      Example: `POST /api/generate {"model":"gemma4:12b","prompt":"...","stream":false}`.
+
+  qwopus:
+    display: "Qwopus 3.6 27B"
+    author_id: "Qwopus3.6-27B-v1-preview"
+    vendor: "community merge (Qwen lineage)"
+    api: openai
+    endpoint: "http://127.0.0.1:8770"
+    api_model: "qwopus"
+    temperature: 0.8
+    preflight: "qwopus-up"
+    self_api: >-
+      A local LLM inference API at `http://127.0.0.1:8770` (llama.cpp,
+      OpenAI-compatible; loaded model: Qwopus3.6-27B — that is you, which you
+      may study if you wish). Example: `POST /v1/chat/completions`. The server
+      has a single inference slot which you share with this session, so calls
+      may queue; keep experiment batches small.
+
+reviewers:
+  opus:
+    display: "Claude Opus 4.8"
+    model_id: "claude-opus-4-8"
+    kind: claude-cli

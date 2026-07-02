@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — Substrate{% endblock %}
+{% block content %}
+<div class="prose-page">
+  <h1>{{ title }}</h1>
+  <div class="prose">{{ body|safe }}</div>
+</div>
+{% endblock %}

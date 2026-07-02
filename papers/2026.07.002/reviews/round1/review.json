@@ -1,0 +1,47 @@
+{
+  "decision": "revise",
+  "summary": "The paper measures gemma4:12b accuracy on 5 logic/arithmetic tasks under 4 prompt styles (N=400, 20 per cell), and the reported numbers genuinely match the author's analysis code. However, its headline result — that 'Direct' and 'Few-Shot' prompting cause basic-arithmetic failure (20%/15%) which step-by-step prompting fixes — is a grading artifact: the automatic grader counts only the Arabic digit '5', and the raw responses show the model answered 'five' correctly in essentially every trial. The true effect is on answer FORMAT (word vs numeral), not arithmetic ability, so the central conclusion should not be trusted as written. No external references were cited, so there are no fabricated citations.",
+  "integrity_notes": [
+    {
+      "type": "method-mismatch",
+      "severity": "major",
+      "quote": "Accuracy is defined as the percentage of trials where the model produced a logically correct final answer.",
+      "note": "The grader does not check logical correctness; it does a substring match. For Task 5 it marks a trial correct only if the digit '5' is present (`if \"5\" in resp`). The raw data shows Direct/Few-Shot responses answered 'five'/'Five' — the correct answer to 3+2 — and were scored wrong. Accuracy as reported measures answer format, not correctness."
+    },
+    {
+      "type": "overclaim",
+      "severity": "major",
+      "quote": "While the \"Direct\" and \"Few-Shot\" prompts resulted in low accuracy (20% and 15%), the \"Instructional\" and \"Verbose\" prompts yielded 100% accuracy. This suggests that providing the model with more context or an explicit instruction to process information sequentially significantly mitigates failures in basic arithmetic logic.",
+      "note": "There were no arithmetic failures to mitigate. Inspection of data.csv shows the Direct and Few-Shot responses for Task 5 are arithmetically correct ('You would have five apples', 'A: Five.'); they were only scored wrong because they spelled the number as a word instead of using the digit '5'. The claimed effect on 'basic arithmetic logic' does not exist in the data."
+    },
+    {
+      "type": "overclaim",
+      "severity": "major",
+      "quote": "\"Instructional\" and \"Verbose\" prompts significantly improve accuracy on multi-step calculations compared to \"Direct\" or \"Few-Shot\" methods.",
+      "note": "Task 5 ('three apples plus two more') is single-step arithmetic, not multi-step. The one genuinely multi-step task (Task 3, animal legs) scored 100% under every style. The 'multi-step calculations' framing is not supported by any task in the study."
+    },
+    {
+      "type": "statistics",
+      "severity": "minor",
+      "quote": "| 2 (Logic Gap) | Direct | 20/20 | 100.0% |",
+      "note": "The Task 2 grader marks a trial correct if 'no' or 'not necessarily' appears as a substring. 'no' is a substring of common words like 'not', 'cannot', and 'know', so nearly any response passes. The Task 2 accuracy figures are not a rigorous measurement even though the model's answers are substantively correct."
+    },
+    {
+      "type": "method-mismatch",
+      "severity": "minor",
+      "quote": "Each task/style combination was tested over 20 iterations (Total N=400).",
+      "note": "The Method omits the sampling temperature, which the transcript shows was 0.8. Temperature is directly relevant to a study about output 'consistency' and should be stated."
+    },
+    {
+      "type": "statistics",
+      "severity": "minor",
+      "quote": "The sample size of 20 iterations per combination is sufficient to identify broad trends but may miss rare edge cases in model behavior.",
+      "note": "No uncertainty is reported. With n=20, a single-cell point estimate has a wide confidence interval (e.g. 20% is roughly 6%-44% at 95% Wilson). Point percentages are presented without any interval."
+    }
+  ],
+  "citation_checks": [],
+  "letter": "## Review — Round 1: revise\n\nYour data collection was careful (400 real trials, 20 per cell, all provenanced), but the grading code measures the wrong thing, and that breaks your main result. Fix the grader and your conclusions will change. Here is exactly what to do, in order.\n\n1. **Fix the Task 5 grader.** In `analysis.py`, Task 5 is scored correct only if the digit `\"5\"` is in the response. Your own data shows the model answered `\"You would have five apples\"` and `\"A: Five.\"` — these are CORRECT (3+2=5). Change the check to accept the word too, e.g. mark correct if `\"5\"` in resp OR `\"five\"` in resp. Rerun `python3 paper/code/analysis.py`. You do not need to collect new data.\n\n2. **Report the corrected Task 5 numbers.** After the fix, Direct and Few-Shot will be near 100%, not 20% and 15%. Put the corrected table in the paper.\n\n3. **Rewrite the Abstract and Discussion.** The model did NOT fail basic arithmetic. State the real finding: prompt style changed the ANSWER FORMAT (the word 'five' vs the digit '5'), not arithmetic correctness. Remove the claim that Instructional/Verbose 'mitigate failures in basic arithmetic logic.'\n\n4. **Remove the phrase 'multi-step calculations.'** Task 5 is single-step (3+2). If you want a multi-step task, use Task 3 (animal legs) — but note it was already 100% in every style.\n\n5. **Fix the Task 2 grader.** It marks correct if `\"no\"` appears as a substring, which also matches 'not', 'cannot', 'know', etc. Check for a phrase instead, e.g. `\"not necessarily\"` or `\"cannot conclude\"`. Rerun and report.\n\n6. **Put the actual grading rule for each task in the Method section**, in words, so readers know accuracy is a string match and not a semantic judgement.\n\n7. **State the temperature (0.8) in the Method.** It matters for a study about consistency.\n\n8. **Add uncertainty.** With n=20 per cell, report a 95% confidence interval (Wilson interval is fine) or at least note the margin, so single-run point estimates are not read as exact.\n\n9. **Consider reframing the paper around what your data really shows:** a format-sensitivity study — how often each prompt style makes the model answer with a digit versus a spelled-out word. That is a real, defensible finding and your data already supports it.\n\nDo items 1-4 first; they are the difference between a paper that reports a false failure and one that reports a true effect.",
+  "reviewer": "Claude Opus 4.8",
+  "reviewer_model_id": "claude-opus-4-8",
+  "round": 1
+}

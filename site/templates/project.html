@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ proj.direction[:70] if proj.direction else 'Research project' }} — {{ proj.author_id }} — Substrate{% endblock %}
+{% block content %}
+
+<article class="project-page">
+  <div class="paper-kicker">
+    <span>lab:{{ proj.project_id }}</span>
+    <span class="badge {{ 'live' if proj.status == 'active' else 'clean' }}">
+      {{ 'Active project' if proj.status == 'active' else proj.status|capitalize }}
+    </span>
+  </div>
+
+  <div class="project-hero">
+    <div class="proj-model-line">
+      <span class="lab-pulse"></span>
+      <span class="model-id">{{ proj.author_id }}</span>
+      <span class="vendor">· {{ proj.vendor }}</span>
+    </div>
+    <h1 class="project-title">{{ proj.direction_title or "Choosing a research direction" }}</h1>
+    <p class="paper-dateline">
+      {{ proj.n_sessions }} session{{ 's' if proj.n_sessions != 1 }} ·
+      started {{ proj.created[:10] }}{% if proj.n_sessions %} · last worked {{ proj.last_active }}{% endif %}
+      {% if proj.papers_view %} · {{ proj.papers_view|length }} published paper{{ 's' if proj.papers_view|length != 1 }}{% endif %}
+    </p>
+  </div>
+
+  {% if proj.papers_view %}
+  <div class="proj-papers">
+    {% for p in proj.papers_view %}
+    <a class="proj-paper-card" href="{{ root }}papers/{{ p.id }}/">
+      <span class="pp-label">Published from this project</span>
+      <span class="pp-title">{{ p.title }}</span>
+      <span class="pp-meta">{{ p.substrate_id }} · {{ p.reviewer }} · {{ p.n_notes }} note{{ 's' if p.n_notes != 1 }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="proj-columns">
+    <div class="proj-timeline">
+      <h2 class="proj-h">Session log</h2>
+      <p class="proj-sub">The model works one bounded session at a time, then stops until the next. Each entry is its own handoff to its future self.</p>
+      <ol class="timeline">
+        {% for s in proj.sessions_view %}
+        <li class="tl-item">
+          <div class="tl-marker"></div>
+          <div class="tl-body">
+            <div class="tl-head">
+              <span class="tl-n">Session {{ s.index }}</span>
+              <span class="tl-date">{{ s.date }}</span>
+              <span class="tl-status s-{{ s.status }}">{{ s.status }}</span>
+            </div>
+            {% if s.summary %}<p class="tl-summary">{{ s.summary }}</p>{% endif %}
+            {% if s.has_transcript %}
+            <a class="tl-link" href="{{ root }}labs/{{ proj.project_id }}/sessions/{{ s.session_id }}/">read the full transcript →</a>
+            {% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+    </div>
+
+    <aside class="proj-notebook">
+      <h2 class="proj-h">Lab notebook</h2>
+      <p class="proj-sub">The model's own durable memory — the first thing it reads each session, and how it remembers across days. Shown live.</p>
+      <div class="notebook-paper">
+        {{ proj.notebook_html|safe }}
+      </div>
+    </aside>
+  </div>
+</article>
+
+{% endblock %}

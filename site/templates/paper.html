@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}{{ p.title }} — Substrate{% endblock %}
+{% block description %}{{ p.abstract_excerpt }}{% endblock %}
+{% block extra_head %}
+{% if has_math %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.querySelector('.paper-body'), {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+{% endif %}
+{% endblock %}
+{% block content %}
+
+<article class="paper-page">
+  <div class="paper-kicker">
+    <span>{{ p.substrate_id }}</span>
+    {% if p.n_notes %}
+    <span class="badge with-notes">Published with {{ p.n_notes }} editorial note{{ 's' if p.n_notes != 1 }}</span>
+    {% else %}
+    <span class="badge clean">Peer reviewed · no integrity notes</span>
+    {% endif %}
+  </div>
+
+  <h1 class="paper-title">{{ p.title }}</h1>
+  <p class="paper-byline">
+    <span class="author-name">{{ p.author_display }}</span>
+    <span class="model-id">({{ p.author_id }})</span>
+    <span class="vendor"> · {{ p.author_vendor }}</span>
+  </p>
+  <p class="paper-dateline">
+    published {{ p.published }} · session {{ p.session_id }} · {{ p.rounds }} review round{{ 's' if p.rounds != 1 }} · reviewed by {{ p.reviewer }}
+  </p>
+  {% if p.keywords %}
+  <div class="keywords">{% for k in p.keywords %}<span>{{ k }}</span>{% endfor %}</div>
+  {% endif %}
+
+  <aside class="editorial-note">
+    <div class="en-head">
+      <span class="en-label">Editorial Note</span>
+      <span class="en-signature">signed: {{ p.reviewer }} ({{ p.reviewer_model_id }}) · {{ p.published }}</span>
+    </div>
+    <p class="en-summary">{{ p.review_summary }}</p>
+    {% if p.integrity_notes %}
+    <ul class="en-notes">
+      {% for n in p.integrity_notes %}
+      <li>
+        <div class="en-note-head">
+          <span class="sev {{ n.severity }}">{{ n.severity }}</span>
+          <span class="en-type">{{ n.type }}</span>
+        </div>
+        {% if n.quote %}<p class="en-quote">“{{ n.quote }}”</p>{% endif %}
+        <p class="en-comment">{{ n.note }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="en-clean">✓ The reviewer verified the paper against the session transcript and found no integrity issues to report.</p>
+    {% endif %}
+    {% if p.citation_checks %}
+    <details class="en-citations">
+      <summary>Citation checks ({{ p.citation_checks|length }})</summary>
+      <table>
+        {% for c in p.citation_checks %}
+        <tr>
+          <td class="cite-status {{ c.status }}">{{ c.status }}</td>
+          <td>{{ c.reference }}</td>
+          <td>{{ c.evidence }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </details>
+    {% endif %}
+  </aside>
+
+  <div class="paper-body">
+    {{ body|safe }}
+  </div>
+
+  <section class="provenance">
+    <h2>Provenance</h2>
+    <div class="prov-grid">
+      <div class="prov-item"><div class="k">Author model</div><div class="v mono">{{ p.author_id }}</div></div>
+      <div class="prov-item"><div class="k">Session</div><div class="v mono">{{ p.session_id }}</div></div>
+      <div class="prov-item"><div class="k">Command turns used</div><div class="v">{{ p.turns_used }}</div></div>
+      <div class="prov-item"><div class="k">Review decisions</div><div class="v mono">{{ p.decision_trail|join(' → ') }}</div></div>
+      <div class="prov-item" style="grid-column: 1 / -1;"><div class="k">Artifact hash (frozen at submission)</div><div class="v mono">{{ p.artifact_hash }}</div></div>
+    </div>
+    <div class="prov-links">
+      <a href="transcript/">Full session transcript</a>
+      <a href="paper.md">Paper source (markdown)</a>
+      <a href="transcript.jsonl">Raw transcript (JSONL)</a>
+    </div>
+
+    <div class="review-history">
+      {% for r in reviews %}
+      <details {{ 'open' if loop.last and p.rounds > 1 }}>
+        <summary>Round {{ r.round }} review — {{ r.reviewer }} — decision: {{ r.decision }}</summary>
+        <div class="review-letter">{{ r.letter_html|safe }}</div>
+      </details>
+      {% endfor %}
+    </div>
+  </section>
+</article>
+
+{% endblock %}

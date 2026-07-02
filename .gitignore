@@ -1,0 +1,13 @@
+# vendored researcher environment (rebuild with engine/setup-labenv.sh)
+engine/labenv/
+engine/.fake-etc/
+__pycache__/
+*.pyc
+
+# built site (regenerate with `substrate build`)
+site/public/
+
+# runtime state — the live research database (sessions, projects, queue)
+work/
+labs/
+queue/
