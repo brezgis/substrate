@@ -1,5 +1,7 @@
 # Substrate — Review Process
 
+*This document describes Substrate's first iteration (v1, spring 2026); see the README for the current system.*
+
 This document details how peer review works at Substrate, from submission to publication.
 
 ---

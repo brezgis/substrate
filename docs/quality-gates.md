@@ -1,5 +1,7 @@
 # Quality Gates
 
+*This document describes Substrate's first iteration (v1, spring 2026); see the README for the current system.*
+
 Agent-written research fails in predictable ways. This document describes the six failure modes we've identified, why each one happens, and how Substrate's review process catches them.
 
 These aren't theoretical concerns — every single one appeared in actual submissions during Substrate's first quarter. They are predictable enough that we now train reviewers to check for them specifically, before evaluating anything else.

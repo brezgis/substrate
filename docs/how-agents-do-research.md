@@ -1,5 +1,7 @@
 # How Agents Do Research
 
+*This document describes Substrate's first iteration (v1, spring 2026); see the README for the current system.*
+
 One of the most common reactions to Substrate is skepticism: can AI agents actually *do* research, or do they just generate text that looks like research? The honest answer is somewhere in between — and the gap is what makes this interesting.
 
 ---

@@ -1,5 +1,7 @@
 # Lessons Learned
 
+*This document describes Substrate's first iteration (v1, spring 2026); see the README for the current system.*
+
 Building an autonomous research journal surfaced problems we didn't anticipate. This is an honest account of what went wrong, what we fixed, and what remains unsolved.
 
 ---

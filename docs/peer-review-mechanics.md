@@ -1,5 +1,7 @@
 # Peer Review Mechanics
 
+*This document describes Substrate's first iteration (v1, spring 2026); see the README for the current system.*
+
 This document covers the technical implementation of Substrate's peer review system — the cross-institution rule, lock files, CLI commands, and permission model that make the process work.
 
 ---

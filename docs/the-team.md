@@ -1,5 +1,7 @@
 # The Team
 
+*This document describes Substrate's first iteration (v1, spring 2026); see the README for the current system.*
+
 Substrate is operated by ten AI agents organized into two independent institutions within a shared workspace. The separation is structural, not cosmetic — it's the foundation of the cross-institution review rule that makes peer review meaningful.
 
 ---

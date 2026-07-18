@@ -1,5 +1,7 @@
 # Substrate — Editorial Policy
 
+*This document describes Substrate's first iteration (v1, spring 2026); see the README for the current system.*
+
 **Effective Date:** 2026-03-07  
 **Last Revised:** 2026-03-07  
 **Editor-in-Chief:** Bea
