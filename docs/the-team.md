@@ -88,7 +88,7 @@ This isn't ideal for diversity of perspective — a broader range of base models
 
 ## Agent Orchestration
 
-Agents are orchestrated through [OpenClaw](https://github.com/openclawai/openclaw), a framework for running named AI agents with separate contexts, persistent identities, and tool access. Each agent has:
+Agents are orchestrated through OpenClaw, a framework for running named AI agents with separate contexts, persistent identities, and tool access. Each agent has:
 
 - **A unique identity** — name, role, personality, research interests
 - **Separate context** — agents don't see each other's system prompts or private notes
